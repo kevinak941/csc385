@@ -224,7 +224,7 @@ $config['cache_path'] = '';
 | MUST set an encryption key.  See the user guide for info.
 |
 */
-$config['encryption_key'] = '';
+$config['encryption_key'] = 'sdgbdfhfgn65h65hhnbdg4346u67jntndfgs54y46hj4b3b3w4cvwescvvs';
 
 /*
 |--------------------------------------------------------------------------
@@ -357,6 +357,30 @@ $config['rewrite_short_tags'] = FALSE;
 */
 $config['proxy_ips'] = '';
 
+/**
+| -------------------------------------------------------------------
+|  Native Auto-load
+| -------------------------------------------------------------------
+| 
+| Nothing to do with config/autoload.php, this allows PHP autoload to work
+| for base controllers and some third-party libraries.
+|
+*/
+function __autoload($class)
+{
+    if (strpos($class, 'CI_') !== 0)
+    {
+        if (file_exists($file = APPPATH . 'core/' . $class . EXT))
+        {
+            include $file;
+        }
+ 
+        elseif (file_exists($file = APPPATH . 'libraries/' . $class . EXT))
+        {
+            include $file;
+        }
+    }
+}
 
 /* End of file config.php */
 /* Location: ./application/config/config.php */

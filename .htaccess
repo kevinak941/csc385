@@ -1,0 +1,16 @@
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /csc385/
+
+RewriteCond %{REQUEST_FILENAME} !-f 
+RewriteCond %{REQUEST_FILENAME} !-d 
+RewriteRule ^(.*)$ index.php?/$1 [L]
+ 
+
+
+# Removes access to the system folder by users.
+# Additionally this will allow you to create a System.php controller,
+RewriteCond %{REQUEST_URI} ^system.*
+RewriteRule ^(.*)$ /index.php/$1 [L]
+
+</IfModule>

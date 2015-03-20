@@ -4,11 +4,12 @@
  *
  * PHP version 5.3
  *
- * @category  Models
- * @package   EPTA
- * @author    Kevin Kern <kevinak941@gmail.com>
- * @copyright 2014-2015 Kevin Kern all rights reserved
- * @version   1.0
+ * @category    Models
+ * @package     EPTA
+ * @author      Kevin Kern <kevinak941@gmail.com>
+ * @copyright   2014-2015 Kevin Kern all rights reserved
+ * @version     1.0
+ * @description Base Model that provides simple CRUD methods to all children
  */
 
 class KAK_Model extends CI_Model {
@@ -133,6 +134,12 @@ class KAK_Model extends CI_Model {
 				} else {
 					$this->db->where($key, $where);
 				}
+			}
+		}
+        
+        if(isset($options['like'])) {
+			foreach($options['like'] as $key => $where) {
+				$this->db->like($key, $where);
 			}
 		}
 		

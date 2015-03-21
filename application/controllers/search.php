@@ -24,6 +24,7 @@ class Search extends Base_Controller {
         $this->load->library('query_builder', '', 'query');
         $this->load->library('parser', '', 'parser');
         $this->load->library('store', '', 'store');
+        $this->load->library('fork', '', 'fork');
     }
 
 	/**
@@ -88,7 +89,8 @@ class Search extends Base_Controller {
             foreach($this->parser->items as $value) {
                 $cat = $this->category_m->get(array('site_cat_id'   =>  (int)$value->primaryCategory->categoryId, 'single'=>TRUE));
                 if(!$cat) {
-                    $cat_id = $this->category_m->insert(array(  'site_cat_id'   =>  (int)$value->primaryCategory->categoryId,
+                    $cat_id = $this->category_m->insert(array(  'site_type'     =>  'ebay',
+                                                                'site_cat_id'   =>  (int)$value->primaryCategory->categoryId,
                                                                 'name'          =>  (string)$value->primaryCategory->categoryName));
                 } else 
                     $cat_id = $cat['id'];
@@ -127,8 +129,9 @@ class Search extends Base_Controller {
                                                 ));
                     
                     if($this->config->item('enable_tagCollection')) {
-                        $this->store->tag('title', (string)$value->title, $item_id, $cat_id);
-                        $this->store->tag('subtitle', (string)$value->subtitle, $item_id, $cat_id);
+                        //$this->store->tag('title', (string)$value->title, $item_id, $cat_id);
+                        //$this->store->tag('subtitle', (string)$value->subtitle, $item_id, $cat_id);
+                        $this->fork->add(base_url('curl/addTags'))->run();
                     }
                 } else {
                     // Site specific item found in our database

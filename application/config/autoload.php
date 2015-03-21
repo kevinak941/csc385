@@ -80,7 +80,7 @@ $autoload['helper'] = array('url');
 |
 */
 
-$autoload['config'] = array('keys', 'matches');
+$autoload['config'] = array('keys', 'matches', 'application');
 
 
 /*

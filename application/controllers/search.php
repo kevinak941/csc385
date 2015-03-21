@@ -66,17 +66,25 @@ class Search extends Base_Controller {
         
         if(!$keyword || $keyword == '') { $this->error('invalid_search'); return; }
         
-        $url = $this->query->build(array('keyword'=>$keyword));
         
-        $this->recent_search_m->add_keyword($this->input->post('keyword'));
+        if($this->config->item('enable_recentSearch'))
+            $this->recent_search_m->add_keyword($this->input->post('keyword'));
         
         $tt = $this->tag_type_m->get(array('array_key'=>'name'));
         
-        // Fetch xml from source as object
-        $response = simplexml_load_file($url);
-        if($response->ack == "Success") {
-            // Scan item 
-            $this->parser->scan($response->searchResult->item);
+        // Perform multiple calls to ebay api
+        for($x = 1; $x <= $this->config->item('ebay_pagesPerSearch'); $x++) {
+            $url = $this->query->build(array('keyword'=>$keyword, 'page'=>$x));
+            // Fetch xml from source as object
+            $response = simplexml_load_file($url);
+            // Only parse if successful
+            if($response->ack == "Success") { 
+                // Scan item 
+                $this->parser->scan($response->searchResult->item);
+            }
+        }
+        
+        if(count($this->parser->items) > 0) {
             foreach($this->parser->items as $value) {
                 $cat = $this->category_m->get(array('site_cat_id'   =>  (int)$value->primaryCategory->categoryId, 'single'=>TRUE));
                 if(!$cat) {
@@ -123,7 +131,7 @@ class Search extends Base_Controller {
                 } else {
                     // Site specific item found in our database
                     // Update it's values
-                    $this->item_m->insert(array(    'category_id'       =>  (int)$value->primaryCategory->categoryId,
+                    $this->item_m->update(array(    'category_id'       =>  (int)$value->primaryCategory->categoryId,
                                                     'image'             =>  (string)$value->galleryURL,
                                                     'currentPrice'      =>  $cost,
                                                     'bestOffer'         =>  (int)$value->listingInfo->bestOfferEnabled,
@@ -187,12 +195,14 @@ class Search extends Base_Controller {
      * Pulls specific item data from the database based on matches discoved by the parser
      */
     private function pull_local() {
-        // Check if parser found a most common product id
-        if(isset($this->parser->mostCommon['product_id'])) {
-            // Pull any matching items from local datasource
-            $local_items = $this->item_m->get(array('site_product_id' => $this->parser->mostCommon['product_id'], 'not_in' => array('site_item_id'=>$this->parser->itemIds)));
-            // Load items into the parser
-            $this->parser->scan($local_items);
+        if($this->config->item('enable_localResults')) {
+            // Check if parser found a most common product id
+            if(isset($this->parser->mostCommon['product_id'])) {
+                // Pull any matching items from local datasource
+                $local_items = $this->item_m->get(array('site_product_id' => $this->parser->mostCommon['product_id'], 'not_in' => array('site_item_id'=>$this->parser->itemIds)));
+                // Load items into the parser
+                $this->parser->scan($local_items);
+            }
         }
     }
 

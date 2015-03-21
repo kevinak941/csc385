@@ -16,6 +16,7 @@ class Query_builder extends Connector {
     private $_call_string = "";
     
     // Item Filters
+    private $_pageNumber = 1;
     private $_keyword = "";
     private $_condition = false;
     
@@ -38,7 +39,7 @@ class Query_builder extends Connector {
         // TODO: Layout conditions for advanced search
         $this->_keyword = (isset($options['keyword']) ? $options['keyword'] : $this->ci->input->post('keyword'));
         if(isset($options['condition'])) $this->_condition = $options['condition'];
-        
+        if(isset($options['page'])) $this->_pageNumber = $options['page'];
         return $this->get_call_string();
     }
     
@@ -57,7 +58,9 @@ class Query_builder extends Connector {
         $this->_call_string .= "&GLOBAL-ID=".$this->ci->config->item('ebay_globalid');
         $this->_call_string .= "&keywords=".$this->_keyword;
         $this->_call_string .="&itemFilter[0].name=Condition&itemFilter[0].value=New";
-        $this->_call_string .= "&paginationInput.entriesPerPage=20";
+        $this->_call_string .= "&paginationInput.entriesPerPage=".$this->ci->config->item('ebay_entriesPerPage');
+        if($this->_pageNumber) 
+            $this->_call_string .= "&paginationInput.pageNumber=".$this->_pageNumber;
         return $this->_call_string;
     }
     

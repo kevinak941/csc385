@@ -38,3 +38,9 @@ $config['enable_recentSearch'] = TRUE;
  * Recommended: TRUE
  */ 
 $config['enable_localResults'] = TRUE;
+
+/**
+ * Allow EPTA to parse and store tags from items
+ * Recommended: TRUE
+ */
+$config['enable_tagCollection'] = TRUE;

@@ -126,8 +126,10 @@ class Search extends Base_Controller {
                                                     'raw'               =>  (string)print_r($value, true)
                                                 ));
                     
-                    $this->store->tag('title', (string)$value->title, $item_id, $cat_id);
-                    $this->store->tag('subtitle', (string)$value->subtitle, $item_id, $cat_id);
+                    if($this->config->item('enable_tagCollection')) {
+                        $this->store->tag('title', (string)$value->title, $item_id, $cat_id);
+                        $this->store->tag('subtitle', (string)$value->subtitle, $item_id, $cat_id);
+                    }
                 } else {
                     // Site specific item found in our database
                     // Update it's values

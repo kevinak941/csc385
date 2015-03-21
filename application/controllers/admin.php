@@ -40,6 +40,20 @@ class Admin extends CI_Controller {
         $resp = simplexml_load_file($call_string);
         print_r($resp);
     }
+    
+    /**
+     * Removes all data from relevant tables
+     * WARNING: THIS IS FOR REAL
+     * TODO: Enable only in developer mode
+     */
+    public function wipeAllData() {
+        $this->db->truncate('item');
+        $this->db->truncate('price');
+        $this->db->truncate('tag');
+        $this->db->truncate('item_has_tag');
+        $this->db->truncate('category');
+        
+    }
 }
 
 /* End of file admin.php */

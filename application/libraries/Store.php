@@ -19,6 +19,8 @@
 class Store extends Linker {
     private $tag_types = array();
     
+    private $_tag_cache = array();
+    
     /** 
      * Constructor
      */
@@ -36,6 +38,7 @@ class Store extends Linker {
             $this->tag_types = array_merge($this->tag_types, $this->ci->tag_type_m->get(array('name'=>$type, 'array_key'=>'name')));
         $tag_type = $this->tag_types[$type];
         
+        $return_tag_ids = array();
         if($tags !== '') {
             // Check if tag type requires any chars to be removed
             if(isset($tag_type['remove_chars'])) {
@@ -46,25 +49,37 @@ class Store extends Linker {
             // Explode tag string by predefined delimiter
             $ex = explode($tag_type['delimiter'], $tags);
             foreach($ex as $k=>$tag) {
-                $otag = $this->ci->tag_m->get(array('value'=>$tag, 'single'=>TRUE));
+                // Check store's cache before asking DB
+                if(array_key_exists($tag, $this->_tag_cache)) {
+                    $otag = $this->_tag_cache[$tag];
+                } else
+                    $otag = $this->ci->tag_m->get(array('value'=>$tag, 'single'=>TRUE));
+                
                 if($otag!==FALSE) {
-                    $price = $this->ci->price_m->get(array('id'=>$otag['price_id']));
+                    //$price = $this->ci->price_m->get(array('id'=>$otag['price_id']));
                     $this->ci->tag_m->update(   array('numItems'=>  $otag['numItems']+1),
                                                 array('id'      =>  $otag['id']));
                     $tag_id = $otag['id'];
+                    
+                   // $this->_tag_cache[$otag['value']] = array('id'=>$tag_id,'numItems'=>$otag['numItems']+1);
                 } else {
+                    
                     // Set up a base price grouping for the tag
-                    $price_id = $this->ci->price_m->insert(array('numItems'  =>  1));
+                    $price_id = $this->ci->price_m->insert(array('min'=>'0.00'));
                     // Add the tag and link it to its new price grouping
                     $tag_id = $this->ci->tag_m->insert(array(   'value'         =>  $tag,
                                                                 'tag_type_id'   =>  $tag_type['id'],
                                                                 'price_id'      =>  $price_id));
+                    $this->_tag_cache[$tag] = array('id'=>$tag_id,'numItems'=>1);
+                    
                 }
-                
+                $return_tag_ids[] = $tag_id;
                 parent::linkItemToTag($item_id, $tag_id);
             }
+            return $return_tag_ids;
             //$this->tag_group($ex);
         }
+        return array();
     }
     
     public function tag_group($tags = array()){

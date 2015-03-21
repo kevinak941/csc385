@@ -15,16 +15,16 @@ class Category_m extends KAK_Model {
 		parent::__construct('category', 
 							array(	'id',
                                     'site_cat_id',
+                                    'site_type',
                                     'name',
-                                    'avgPrice',
-                                    'maxPrice',
-                                    'minPrice',
+                                    'price_id',
                                     'dbCreatedOn',
                                     'dbUpdatedOn'
 							),
 							NULL, 
 							NULL);
 	}
+    
 }
 
 /* End of file category_m.php */

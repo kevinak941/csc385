@@ -35,7 +35,8 @@ class Item_m extends KAK_Model {
                                     'sellingState',
                                     'raw',
                                     'dbCreatedOn',
-                                    'dbUpdatedOn'
+                                    'dbUpdatedOn',
+                                    'dbGenerated'
 							),
 							NULL, 
 							NULL);

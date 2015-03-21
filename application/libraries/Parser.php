@@ -22,6 +22,7 @@ class Parser {
     // Collections
     public $items = array();
     public $byCategory = array();
+    public $pricesByCategory = array();
     public $byPrice = array();
     public $mostCommon = array();
     public $itemIds = array();
@@ -72,8 +73,8 @@ class Parser {
                     // By Category
                     if($item->primaryCategory) {
                         $cat_string = (string)$item->primaryCategory->categoryId;
-                        if(!isset($this->byCategory[$cat_string])) $this->byCategory[$cat_string] = array();
-                        $this->byCategory[$cat_string][] = $item;
+                        if(!isset($this->pricesByCategory[$cat_string])) $this->pricesByCategory[$cat_string] = array();
+                        $this->pricesByCategory[$cat_string][] = (int)$item->sellingStatus->currentPrice;
                     }
                     // Common Tracking
                     $product_id             = $item->productId;

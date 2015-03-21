@@ -57,7 +57,7 @@ class Query_builder extends Connector {
         $this->_call_string .= "&SECURITY-APPNAME=".$this->ci->config->item('ebay_appid');
         $this->_call_string .= "&GLOBAL-ID=".$this->ci->config->item('ebay_globalid');
         $this->_call_string .= "&keywords=".$this->_keyword;
-        $this->_call_string .="&itemFilter[0].name=Condition&itemFilter[0].value=New";
+        //$this->_call_string .="&itemFilter[0].name=Condition&itemFilter[0].value=New";
         $this->_call_string .= "&paginationInput.entriesPerPage=".$this->ci->config->item('ebay_entriesPerPage');
         if($this->_pageNumber) 
             $this->_call_string .= "&paginationInput.pageNumber=".$this->_pageNumber;

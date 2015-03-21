@@ -20,7 +20,7 @@ $config['ebay_entriesPerPage'] = 100;
  * Recommended: 1-5
  * Default: 2
  */
-$config['ebay_pagesPerSearch'] = 2;
+$config['ebay_pagesPerSearch'] = 1;
 
 
 /**

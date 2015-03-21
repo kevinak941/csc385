@@ -39,6 +39,7 @@
                             <li><a href="<?php echo base_url('search/advanced/');?>">Advanced</a></li>
                             </ul>
                             </li>
+                            <li><a href="<?php echo base_url('tags');?>">Tags</a></li>
                             <li><a href="<?php echo base_url('api');?>">API</a></li>
                         </ul>
                         <form class="navbar-form navbar-right" role="search" action="<?php echo base_url('search/byKeyword_results/');?>" method="POST">

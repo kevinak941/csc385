@@ -28,17 +28,47 @@ class Admin extends CI_Controller {
      * Pull categories from ebay and add to our local database for rapid lookup
      * TODO: Add addition categories for other sources
      */
-    public function loadCategories() {
-        $call_string = $this->config->item('ebay_trading');
-        $call_string = "https://api.ebay.com/wsapi";
-        $call_string .= "?callname=getCategories";
+    public function loadCategories($id = '-1') {
+        $this->_fetchCategories($id);
+    }
+    
+    /**
+     * Recursive function that spans over a tree of concurrent connections to 
+     * fetch all children of a given category id
+     * Stores any unknown categories into local database
+     * @param $site_cat_id The category id to pull data about
+     * To start at the root, use "-1"
+     */
+    private function _fetchCategories($site_cat_id) {
+        $this->load->model('category_m');
+        $this->load->model('price_m');
+        $this->load->library('fork', '', 'fork');
+        $call_string = $this->config->item('ebay_categories');
+        $call_string .= "?callname=GetCategoryInfo";
         $call_string .= "&siteid=".$this->config->item('ebay_globalid');
         $call_string .= "&appid=".$this->config->item('ebay_appid');
-        
-        $call_string .= "&version=".$this->config->item('ebay_version');
-        $call_string .= "&Routing=new";
+        $call_string .= "&CategoryID=".$site_cat_id;
+        $call_string .= "&IncludeSelector=ChildCategories";
+        $call_string .= "&version=897";
         $resp = simplexml_load_file($call_string);
-        print_r($resp);
+        if($resp->Ack == "Success") {
+            foreach($resp->CategoryArray->Category as $category) {
+                if((string)$category->CategoryID != "-1") {
+                    if(!$this->category_m->exists(array('site_type'=>'ebay',
+                                                        'site_cat_id'   =>  (string)$category->CategoryID))){
+                        // Category doesn't exist
+                        $price_id = $this->price_m->insert(array('min'=>'0.00'));
+                        $this->category_m->insert(array(    'site_type'     =>  'ebay',
+                                                            'site_cat_id'   =>  (string)$category->CategoryID,
+                                                            'name'          =>  (string)$category->CategoryName,
+                                                            'price_id'      =>  $price_id));
+                                                        
+                    }
+                    if((string)$category->LeafCategory=="false") 
+                        $this->fork->add(base_url('admin/loadCategories/'.(string)$category->CategoryID))->run();
+                }
+            }
+        }
     }
     
     /**

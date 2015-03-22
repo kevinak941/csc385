@@ -3,6 +3,7 @@
 // EBAY API KEYS
 $config['ebay_endpoint']    = 'http://svcs.ebay.com/services/search/FindingService/v1';
 $config['ebay_trading']     = 'http://svcs.ebay.com/services/search/TradingService/v1';
+$config['ebay_categories']  = 'http://open.api.ebay.com/Shopping';
 $config['ebay_version']     = '1.0.0';
 $config['ebay_appid']       = '19911f8e7-b752-490c-bec5-d404804bf0c';
 $config['ebay_devid']       = '2a077f3a-46d6-42d8-963a-1fb0c872474f';

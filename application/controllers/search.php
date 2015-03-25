@@ -64,7 +64,7 @@ class Search extends Base_Controller {
         } else {
             $keyword = $this->input->post('keyword');
         }
-        
+
         if(!$keyword || $keyword == '') { $this->error('invalid_search'); return; }
         
         
@@ -85,6 +85,18 @@ class Search extends Base_Controller {
             }
         }
         
+        if(count($this->parser->items) == 0) {
+            // Fire request to findItemsByKeyword
+            $this->query->set_operation("findItemsByKeyword");
+            $url = $url = $this->query->build(array('keyword'=>$keyword, 'page'=>1));
+            $response = simplexml_load_file($url);
+            // Only parse if successful
+            if($response->ack == "Success") { 
+                // Scan item 
+                $this->parser->scan($response->searchResult->item);
+            }
+        }
+
         if(count($this->parser->items) > 0) {
             foreach($this->parser->items as $value) {
                 $cat = $this->category_m->get(array('site_cat_id'   =>  (int)$value->primaryCategory->categoryId, 'single'=>TRUE));
@@ -151,14 +163,15 @@ class Search extends Base_Controller {
                 }
                 
             }
-            
+
             $this->pull_local();
             //echo "<pre>";print_r($this->parser->trackCommon);exit;
             $this->load->view('header');
-            $this->load->view('search_results', $this->prep_output());
+            $this->load->view('search_results', $this->prep_output($keyword));
             $this->load->view('footer');
         } else {
             // Application error
+            $this->error('no_listings'); return;
         }
     }
     
@@ -171,7 +184,7 @@ class Search extends Base_Controller {
     /**
      * Prep the parser's data for output
      */
-    private function prep_output() {
+    private function prep_output($keyword = false) {
         
         $trackCommon = array();
         
@@ -182,12 +195,17 @@ class Search extends Base_Controller {
             arsort($trackCommon[$k]);
         }
         
+        $topTags = $this->parser->storedTags;
+        arsort($topTags);
+        
         // Get the top images from the mostCommon
         $topImages = array_splice($trackCommon['images'],0,5);
         
         // Return the view data
-        return array(   'common'        =>  $trackCommon,
+        return array(   'keyword'       =>  $keyword,
+                        'common'        =>  $trackCommon,
                         'topImages'     =>  $topImages,
+                        'topTags'       =>  $topTags,
                         'mostCommon'    =>  $this->parser->mostCommon,
                         'stats'         =>  array(  'total'     =>  $this->parser->totalItems,
                                                     'remote'    =>  $this->parser->totalRemote,

@@ -19,7 +19,14 @@ class Base_Controller extends CI_Controller {
     protected $errors = array   ('invalid_search' => array(     'title'         =>  'Invalid Search Term',
                                                                 'message'       =>  'The search terms you have provided are invalid, please try again',
                                                                 'link'          =>  'search/byKeyword',
-                                                                'linkMessage'   =>  'Back To Search')
+                                                                'linkMessage'   =>  'Back To Search'),
+                                'no_listings'       =>  array(
+                                                                'title'         =>  'No Results Found',
+                                                                'message'       =>  'The search terms you have provided did not return any results',
+                                                                'link'          =>  'search/byKeyword',
+                                                                'linkMessage'   =>  'Back To Search'
+                                
+                                                        )
                                 );
     
     /**

@@ -43,6 +43,7 @@ class Admin extends CI_Controller {
         $this->load->model('category_m');
         $this->load->model('price_m');
         $this->load->library('fork', '', 'fork');
+        // Prep call string
         $call_string = $this->config->item('ebay_categories');
         $call_string .= "?callname=GetCategoryInfo";
         $call_string .= "&siteid=".$this->config->item('ebay_globalid');
@@ -50,8 +51,10 @@ class Admin extends CI_Controller {
         $call_string .= "&CategoryID=".$site_cat_id;
         $call_string .= "&IncludeSelector=ChildCategories";
         $call_string .= "&version=897";
+        // Send request for xml
         $resp = simplexml_load_file($call_string);
         if($resp->Ack == "Success") {
+            // Loop and process the results
             foreach($resp->CategoryArray->Category as $category) {
                 if((string)$category->CategoryID != "-1") {
                     if(!$this->category_m->exists(array('site_type'=>'ebay',
@@ -64,6 +67,7 @@ class Admin extends CI_Controller {
                                                             'price_id'      =>  $price_id));
                                                         
                     }
+                    // Magic time: trigger concurrent process to start fetching children of this category
                     if((string)$category->LeafCategory=="false") 
                         $this->fork->add(base_url('admin/loadCategories/'.(string)$category->CategoryID))->run();
                 }

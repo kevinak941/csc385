@@ -34,13 +34,17 @@ class Query_builder extends Connector {
     public function build($options = array()) {
         // Default operation_name
         // TODO: Dynamic operation name
-        $this->operation_name = "findCompletedItems";
+        $this->_operation_name = "findCompletedItems";
         // Store any provided conditions
         // TODO: Layout conditions for advanced search
         $this->_keyword = (isset($options['keyword']) ? $options['keyword'] : $this->ci->input->post('keyword'));
         if(isset($options['condition'])) $this->_condition = $options['condition'];
         if(isset($options['page'])) $this->_pageNumber = $options['page'];
         return $this->get_call_string();
+    }
+    
+    public function set_operation($name) {
+        $this->_operation_name = $name;
     }
     
     /**
@@ -52,11 +56,11 @@ class Query_builder extends Connector {
         // Reset call string
         $this->_call_string = "";
         $this->_call_string .= $this->ci->config->item('ebay_endpoint');
-        $this->_call_string .= "?OPERATION-NAME=".$this->operation_name;
+        $this->_call_string .= "?OPERATION-NAME=".$this->_operation_name;
         $this->_call_string .= "&SERVICE-VERSION=".$this->ci->config->item('ebay_version');
         $this->_call_string .= "&SECURITY-APPNAME=".$this->ci->config->item('ebay_appid');
         $this->_call_string .= "&GLOBAL-ID=".$this->ci->config->item('ebay_globalid');
-        $this->_call_string .= "&keywords=".$this->_keyword;
+        $this->_call_string .= "&keywords=".urlencode($this->_keyword);
         //$this->_call_string .="&itemFilter[0].name=Condition&itemFilter[0].value=New";
         $this->_call_string .= "&paginationInput.entriesPerPage=".$this->ci->config->item('ebay_entriesPerPage');
         if($this->_pageNumber) 

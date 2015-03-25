@@ -11,7 +11,7 @@
  * @version     1.0
  * @description Parses data from either external or internal source
  */
-class Parser {
+class Parser extends Connector{
     // Stats
     public $totalItems = 0;
     public $totalLocal = 0;
@@ -29,13 +29,23 @@ class Parser {
     
     
     public $matchedProductId = NULL;
-    
+    public $storedTags = array();
     public $trackCommon = array();
     
     // Internal Cache
     private $_currentPrice = 0;
     private $_currentId = 0;
     private $_currentItemId = 0;
+    
+    private $_tag_types = array();
+    
+    public function __construct() {
+        parent::__construct();
+        $this->ci->load->model('tag_type_m');
+        // Load in tag types
+        if(empty($this->_tag_types)) 
+            $this->_tag_types = $this->ci->tag_type_m->get(array('array_key'=>'name'));
+    }
     
     /**
      * Scans a given set of items pulling out what data it needs
@@ -100,6 +110,8 @@ class Parser {
                     if($this->firstStartDate==NULL||$item->listingInfo->startDate<$this->firstStartDate) $this->firstStartDate = $item->listingInfo->startDate;
                     if($this->lastStartDate==NULL||$item->listingInfo->startDate>$this->lastStartDate)  $this->lastStartDate = $item->listingInfo->startDate;
                 }
+                
+                $this->explodeTitle($title);
                 // Store common values
                 $this->_addCommon('product_id', $product_id);
                 $this->_addCommon('condition', $condition);
@@ -175,6 +187,25 @@ class Parser {
                 $this->mostCommon[$k] = $max[0];
             } else
                 $this->mostCommon[$k] = NULL;
+        }
+    }
+    
+    public function explodeTitle($title) {
+        $tag_type = $this->_tag_types['title'];
+        // Check if tag type requires any chars to be removed
+        if(isset($tag_type['remove_chars'])) {
+            // Format remove chars to support replacement
+            $removes = explode('\',',substr($tag_type['remove_chars'], 1, -1));
+            $tags = str_replace($removes, '', (string)$title);
+        }
+        // Explode tag string by predefined delimiter
+        $ex = explode($tag_type['delimiter'], $tags);
+        foreach($ex as $tag) {
+            $tag = strtolower($tag);
+            if(!isset($this->storedTags[$tag])) 
+                $this->storedTags[$tag] = 0;
+
+            $this->storedTags[$tag]++;
         }
     }
 }

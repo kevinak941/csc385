@@ -14,6 +14,12 @@
     <li role="presentation">
         <a href="#suggestion" aria-controls="suggestion" role="tab" data-toggle="tab">Suggestion</a>
     </li>
+    <li role="presentation">
+        <a href="#tags" aria-controls="tags" role="tab" data-toggle="tab">Tags</a>
+    </li>
+    <li role="presentation">
+        <a href="#refine" aria-controls="refine" role="tab" data-toggle="tab">Refine</a>
+    </li>
 </ul>
 <!-- Tabs -->
 <div class="tab-content">
@@ -99,6 +105,55 @@
     <div role="tabpanel" class="tab-pane" id="suggestion">
         <h2>Suggestion</h2>
         <p>Given the data we obtained, I would recommend doing the following.. NOT COMPLETE</p>
+    </div>
+    
+    <div role="tabpanel" class="tab-pane" id="tags">
+        <h2>Tags</h2>
+        <?php if(isset($topTags)) { ?>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Number</th>
+                    </tr>
+                </thead>
+                <tbody>
+            <?php foreach($topTags as $key => $tag) { ?>
+                <tr>
+                    <td><?php echo $key; ?></td>
+                    <td><?php echo $tag; ?></td>
+                </tr>
+            <?php } ?>
+                </tbody>
+            </table>
+        <?php } ?>
+    </div>
+    
+    <div role="tabpanel" class="tab-pane" id="refine">
+        <h2>Refine Your Search</h2>
+        <p>Check all of the tags that accurately describe your item. We'll try to more accurately predict your item.</p>
+        <?php if(isset($topTags)) { ?>
+        <div style="max-height:300px;overflow:auto;">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Name</th>
+                        <th>Number</th>
+                    </tr>
+                </thead>
+                <tbody>
+            <?php foreach($topTags as $key => $tag) { ?>
+                <tr>
+                    <td><input type="checkbox" <?php echo ($key != "" && strpos(strtolower($keyword), $key) > -1) ? 'checked="checked"' : ''; ?>></td>
+                    <td><?php echo $key; ?></td>
+                    <td><?php echo $tag; ?></td>
+                </tr>
+            <?php } ?>
+                </tbody>
+            </table>
+        </div>
+        <?php } ?>
     </div>
 </div>
 </div>

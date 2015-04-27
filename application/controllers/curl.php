@@ -19,10 +19,17 @@ class Curl extends Base_Controller {
         $this->load->library('store', '', 'store');
     }
     
+    public function addPostItem() {
+        $this->load->model('item_m');
+        $this->item_m->addFromPost();
+        //return "complete";
+    }
+    
     public function addTags() {
         $this->load->model('item_m');
         $this->load->model('tag_m');
         $this->load->model('price_m');
+        //$this->store->tag('title', 'hey', '565', '1');
         
         $items = $this->item_m->get(array('dbGenerated' => '0'));
         if($items) {
@@ -39,18 +46,19 @@ class Curl extends Base_Controller {
             }
             foreach($update_tag_ids as $key => $arr) {
                 $tag = $this->tag_m->get(array('select'=>array('tag.id', 'value', 'price_id', 'numItems', 'avg', 'max', 'min'), 'tag.id'=>$key, 'single'=>TRUE, 'join'=>array('price'=>'price.id=tag.price_id')));
-                echo '<pre>';print_r($tag);
                 if($tag) {
                     $num = $tag['numItems'];
                     $total = $tag['avg'] * $num;
                     $max = $tag['max'];
                     $min = $tag['min'];
                     foreach($arr as $price) {
+                        echo "PRICE : ".$price."<br>";
                         $total += $price;
                         if($price>$max) $max = $price;
-                        if($price<$min || $min=='0.00') $min = $price;
+                        if($price<$min || $min==0.00) $min = $price;
                         $num++;
                     }
+echo "TSG : ".$min." ".$max." ".($total)."<br>";
                     $this->price_m->update(array('min'=>$min, 'max'=>$max, 'avg'=>($total/$num)), array('id'=>$tag['price_id']));
                     $this->tag_m->update(array('numItems'=>$num), array('id'=>$tag['id']));
                     

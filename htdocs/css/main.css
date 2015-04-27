@@ -8,6 +8,21 @@ ul{list-style-type:none;padding-left:10px;}
 
 tr.stripe{background:#f9f9f9}
 
+.navbar-brand{padding:3px 15px;}
+
+#home_grid{margin:10px auto;text-align:center;}
+#home_grid img{width:100%;max-width:350px;margin:0 auto;}
+
+.red{color:#E43137}
+.green{color:#99CC01;}
+.yellow{color:#F5AE02}
+.blue{color: #0265D1}
+.red-bg{background-color:#E43137;color:#FFF;}
+.green-bg{background-color:#99CC01;color:#FFF;}
+.yellow-bg{background-color:#F5AE02;color:#FFF;}
+.blue-bg{background-color: #0265D1;color:#FFF;}
+h3.red-bg,h3.green-bg, h3.yellow-bg, h3.blue-bg{font-size:18px;padding:10px;color:#FFF;}
+
 /* ADDITIONAL BOOTSTRAP FEATURES */
 .bs-callout {
     padding: 20px;
@@ -35,11 +50,11 @@ tr.stripe{background:#f9f9f9}
 }
 
 .bs-callout-danger {
-    border-left-color: #ce4844
+    border-left-color: #E43137
 }
 
 .bs-callout-danger h4 {
-    color: #ce4844
+    color: #E43137
 }
 
 .bs-callout-green{
@@ -49,17 +64,17 @@ tr.stripe{background:#f9f9f9}
 .bs-callout-green h4{color:#99CC01;}
 
 .bs-callout-warning {
-    border-left-color: #aa6708
+    border-left-color: #F5AE02;
 }
 
 .bs-callout-warning h4 {
-    color: #aa6708
+    color: #F5AE02;
 }
 
 .bs-callout-info {
-    border-left-color: #1b809e
+    border-left-color: #0265D1
 }
 
 .bs-callout-info h4 {
-    color: #1b809e
+    color: #0265D1
 }

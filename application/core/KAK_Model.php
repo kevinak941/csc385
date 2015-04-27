@@ -14,7 +14,7 @@
 
 class KAK_Model extends CI_Model {
 	private $_primary_table = '';
-	private $_fields = array();
+	protected $_fields = array();
 	private $_required_fields = array();
 	private $_default_values = array();
 	

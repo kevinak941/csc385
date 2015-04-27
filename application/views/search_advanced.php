@@ -1,12 +1,9 @@
-<h1>Not complete yet</h1>
-
-<p></p>
 
 <div class="container">
 <div class="bs-callout bs-callout-danger">
 <h4>Advanced Search</h4>
-<form class="form-inline text-center">
-    <div>
+<form class="text-center" action="<?php echo base_url('search/byKeyword_results/');?>" method="POST">
+    <div class="form-inline">
         <label for="keyword">Keyword</label>
         <input class="form-control" type="text" value="" name="keyword" id="keyword">
         <input class="btn btn-primary" type="submit" value="Search">
@@ -14,15 +11,15 @@
     <div class="form-group">
         <p>Condition Of Item</p>
         <label>
-        <input type="checkbox" name="condition[]" value="New">
+        <input type="checkbox" name="Condition[]" value="New">
         New
         </label>
         <label>
-        <input type="checkbox" name="condition[]" value="Used">
+        <input type="checkbox" name="Condition[]" value="Used">
         Used
         </label>
         <label>
-        <input type="checkbox" name="condition[]" value="Unspecified">
+        <input type="checkbox" name="Condition[]" value="Unspecified">
         Unspecified
         </label>
     </div>
@@ -89,7 +86,7 @@
         </label>
     </div>
     
-    <div class="form-group">
+    <div class="form-group form-inline">
         <label>Max Value</label>
         <div class="input-group">
             <span class="input-group-addon">$</span>

@@ -10,6 +10,7 @@
         
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     </head>
     <body>
         <div id="wrapper" class="container-fluid">
@@ -24,7 +25,9 @@
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
                         </button>
-                        <a class="navbar-brand" href="<?php echo base_url();?>">EPTA</a>
+                        <a class="navbar-brand" href="<?php echo base_url();?>">
+                            <img src="http://localhost/csc385/htdocs/images/epta_logo.png" style="max-width: 90px;">
+                        </a>
                     </div>
 
                     <!-- Collect the nav links, forms, and other content for toggling -->

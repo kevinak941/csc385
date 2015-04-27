@@ -1,4 +1,3 @@
-<a href="//<?php echo site_url('search/byKeyword');?>">Back</a>
 <h1><i class="fa fa-bars"></i> Search Results</h1>
 <div role="tabpanel">
 <ul  id="tabs" class="nav nav-tabs" role="tablist">
@@ -14,31 +13,46 @@
     <li role="presentation">
         <a href="#suggestion" aria-controls="suggestion" role="tab" data-toggle="tab">Suggestion</a>
     </li>
+    <?php if($removedItems) { ?>
     <li role="presentation">
-        <a href="#tags" aria-controls="tags" role="tab" data-toggle="tab">Tags</a>
+        <a href="#removed" aria-controls="removed" role="tab" data-toggle="tab">Removed Items (<?php echo count($removedItems); ?>)</a>
     </li>
+    <?php } ?>
+    <?php if($allItems) { ?>
+    <li role="presentation">
+        <a href="#all" aria-controls="all" role="tab" data-toggle="tab">All Items (<?php echo count($allItems); ?>)</a>
+    </li>
+    <?php } ?>
     <li role="presentation">
         <a href="#refine" aria-controls="refine" role="tab" data-toggle="tab">Refine</a>
     </li>
 </ul>
 <!-- Tabs -->
-<div class="tab-content">
+<div class="tab-content container">
     <div role="tabpanel" class="tab-pane active" id="main">
-        <h3>Most Common Name For Your Located Item</h3>
-        <p><?php echo $mostCommon['title'];?></p>
+        <?php if(isset($mostCommon['title'])) { ?>
+            <h3>Most Common Name For Your Located Item</h3>
+            <p><?php echo $mostCommon['title'];?></p>
+        <?php } ?>
+        
         <div class="bs-callout bs-callout-warning">
             <h4>Not your item?</h4>
             <p>If this title does not match what your item is, you may want to try either adding more keywords to the <a href="<?php echo base_url('search/byKeyword');?>">keyword search</a> or refining your <a href="<?php echo base_url('search/advanced');?>">advanced search</a>.</p>
         </div>
+        
+        <?php if(isset($topImages)&&$topImages!=false) { ?>
         <h3><i class="fa fa-picture-o"></i> Images Matching Your Search</h3>
-        <?php if(isset($topImages)&&count($topImages) > 0) { ?>
         <?php foreach($topImages as $src => $image) { ?>
             <img src="<?php echo $src;?>" alt="image">
         <?php } ?>
         <?php } ?>
+        
         <h3><i class="fa fa-bars"></i> Stats About Your Search</h3>
         <table class="table table-striped">
         <tbody>
+            <tr>
+            <td>Search Time Elapsed</td><td><?php echo $time;?></td>
+            </tr>
             <tr>
             <td>Total Items Considered</td><td><?php echo $stats['total']; ?></td>
             </tr>
@@ -47,6 +61,9 @@
             </tr>
             <tr>
             <td>Total Local Items Considered</td><td><?php echo $stats['local']; ?></td>
+            </tr>
+            <tr>
+            <td>Total Items Removed By Title Matching</td><td><?php echo $stats['removed']; ?></td>
             </tr>
             <tr>
             <td>Earliest Start Date</td><td><?php echo $stats['firstStartDate'];?></td>
@@ -100,39 +117,103 @@
     </div>
     <div role="tabpanel" class="tab-pane" id="graphs">
         <h2>Graphs</h2>
-        <p>Based on the data. NOT COMPLETE</p>
+        <div class="bs-callout bs-callout-info">
+            <p>Graphical output of various data components</p>
+        </div>
+
+        <?php echo $this->load->view('sections/graphOutput', array('common'=>$common)); ?>
     </div>
     <div role="tabpanel" class="tab-pane" id="suggestion">
         <h2>Suggestion</h2>
-        <p>Given the data we obtained, I would recommend doing the following.. NOT COMPLETE</p>
+        <div class="bs-callout bs-callout-warning">
+            <p>Given the data we obtained, I would recommend doing the following.. </p>
+            <p>This is where advanced logical output will be placed to determine optimal pricing</p>
+        </div>
     </div>
     
-    <div role="tabpanel" class="tab-pane" id="tags">
-        <h2>Tags</h2>
-        <?php if(isset($topTags)) { ?>
+    <?php if($removedItems) { ?>
+    <div role="tabpanel" class="tab-pane" id="removed">
+        <h2>Removed Items (<?php echo count($removedItems); ?>)</h2>
+        <div class="bs-callout bs-callout-danger">
+            <p>Below are all of the items that were removed from your search.</p>
+            <p>None of the following items were used in the price calculations</p>
+        </div>
+        <?php if(isset($removedItems)) { ?>
             <table class="table table-striped">
                 <thead>
                     <tr>
+                        <th>Image</th>
+                        <th>eBay Item Id</th>
                         <th>Name</th>
-                        <th>Number</th>
                     </tr>
                 </thead>
                 <tbody>
-            <?php foreach($topTags as $key => $tag) { ?>
+            <?php foreach($removedItems as $key => $item) { ?>
                 <tr>
-                    <td><?php echo $key; ?></td>
-                    <td><?php echo $tag; ?></td>
+                    <td><img src="<?php echo $item->galleryURL; ?>"></td>
+                    <td><?php echo $item->itemId; ?></td>
+                    <td><a href="<?php echo $item->viewItemURL; ?>"><?php echo $item->title; ?></a></td>
                 </tr>
             <?php } ?>
                 </tbody>
             </table>
         <?php } ?>
     </div>
+    <?php } ?>
+    
+    <?php if($allItems) { ?>
+    <div role="tabpanel" class="tab-pane" id="all">
+        <h2>All Items Found With Your Search (<?php echo count($allItems); ?>)</h2>
+        <?php if(isset($allItems)) { ?>
+            <table id="all_items_table" class="table table-double-striped">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Condition</th>
+                        <th>Current Price</th>
+                        <th>Sold</th>
+                        <th>Duration</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+            <?php $count = 0; foreach($allItems as $key => $item) { ?>
+                <tr class="<?php echo ($count % 2 == 0) ? 'stripe' : '';?>">
+                    <td><img src="<?php echo $item->galleryURL; ?>"></td>
+                    <td><a href="<?php echo $item->viewItemURL; ?>"><?php echo $item->title; ?></a></td>
+                    <td><?php echo $item->listingInfo->listingType;?></td>
+                    <td><?php echo $item->condition->conditionDisplayName; ?></td>
+                    <td>$<?php echo number_format((double)$item->sellingStatus->currentPrice,2);?></td>
+                    <td><?php echo $item->sellingStatus->sellingState;?></td>
+                    <td><?php echo date('H:i:s', (strtotime($item->listingInfo->endTime) - strtotime($item->listingInfo->startTime))); ?></td>
+                    <td><a class="show-more-details btn btn-primary">More</a></td>
+                </tr>
+                <tr style="display:none;">
+                    <td>Category: <?php echo $item->primaryCategory->categoryName; ?></td>
+                    <td>Item Id: <?php echo $item->itemId; ?></td>
+                    <td>Returns Accepted: <?php echo $item->returnsAccepted; ?></td>
+                    <td>Best Offer Enabled: <?php echo $item->listingInfo->bestOfferEnabled; ?> </td>
+                    <td>Buy It Now Available: <?php echo $item->listingInfo->buyItNowAvailable; ?></td>
+                    <td>Is Gift: <?php echo $item->listingInfo->gift; ?></td>
+                    <td>
+                    <td></td>
+                </tr>
+            <?php $count++; } ?>
+                </tbody>
+            </table>
+        <?php } ?>
+    </div>
+    <?php } ?>
     
     <div role="tabpanel" class="tab-pane" id="refine">
         <h2>Refine Your Search</h2>
-        <p>Check all of the tags that accurately describe your item. We'll try to more accurately predict your item.</p>
+        <div class="bs-callout bs-callout-green">
+            <p>Check all of the tags that accurately describe your item. We'll try to more accurately predict your item.</p>
+        </div>
         <?php if(isset($topTags)) { ?>
+        <form class="form-inline text-center" action="<?php echo base_url('search/byKeyword_results/');?>" method="POST">
         <div style="max-height:300px;overflow:auto;">
             <table class="table table-striped">
                 <thead>
@@ -140,6 +221,7 @@
                         <th></th>
                         <th>Name</th>
                         <th>Number</th>
+                        <th>Is Outlier</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -148,17 +230,25 @@
                     <td><input type="checkbox" <?php echo ($key != "" && strpos(strtolower($keyword), $key) > -1) ? 'checked="checked"' : ''; ?>></td>
                     <td><?php echo $key; ?></td>
                     <td><?php echo $tag; ?></td>
+                    <td><?php echo ($tag > 1) ? "False" : "True"; ?></td>
                 </tr>
             <?php } ?>
                 </tbody>
             </table>
         </div>
+        <input type="submit" class="btn btn-primary" value="Refine Search">
+        </form>
         <?php } ?>
     </div>
 </div>
 </div>
 
 <script>
+    $('.show-more-details').click(function(e) {
+        e.preventDefault();
+        var $info = $(this).parent('td').parent('tr').next('tr');
+        $info.toggle();
+    });
     $('.lookUpItems').click(function() {
         var self = $(this);
         var itemIds = $(this).prev('.itemIds').val();
@@ -184,4 +274,6 @@
             self.val('View');
         }
     });
+
+      
 </script>

@@ -31,11 +31,13 @@
 <div class="tab-content container">
     <div role="tabpanel" class="tab-pane active" id="main">
         <?php if(isset($mostCommon['title'])) { ?>
-            <h3>Most Common Name For Your Located Item</h3>
-            <p><?php echo $mostCommon['title'];?></p>
+            <div class="bs-callout bs-callout-info">
+                <h4>Most Common Name For Your Located Item</h4>
+                <p><?php echo $mostCommon['title'];?></p>
+            </div>
         <?php } else { ?>
-            <div>
-                <h3>Oh no. Keywords are too vague</h3>
+            <div class="bs-callout bs-callout-danger">
+                <h4>Oh no. Keywords are too vague</h4>
                 <p>The results we got back aren't showing any consistent items. Try being more specific with your search. Vague searches will not result in valid output</p>
             </div>
         <?php } ?>
@@ -46,13 +48,16 @@
         </div>
         
         <?php if(isset($topImages)&&$topImages!=false) { ?>
-        <h3><i class="fa fa-picture-o"></i> Images Matching Your Search</h3>
+        <div class="bs-callout bs-callout-green">
+        <h4><i class="fa fa-picture-o"></i> Images Matching Your Search</h4>
         <?php foreach($topImages as $src => $image) { ?>
             <img src="<?php echo $src;?>" alt="image">
         <?php } ?>
+        </div>
         <?php } ?>
         
-        <h3><i class="fa fa-bars"></i> Stats About Your Search</h3>
+        <div class="bs-callout bs-callout-danger">
+        <h4><i class="fa fa-bars"></i> Stats About Your Search</h4>
         <table class="table table-striped">
         <tbody>
             <tr>
@@ -71,13 +76,14 @@
             <td>Total Items Removed By Title Matching</td><td><?php echo $stats['removed']; ?></td>
             </tr>
             <tr>
-            <td>Earliest Start Date</td><td><?php echo $stats['firstStartDate'];?></td>
+            <td>Earliest Start Date</td><td><?php echo (isset($stats['firstStartDate']) ? $stats['firstStartDate'] : 'None provided');?></td>
             </tr>
             <tr>
-            <td>Lastest Start Date</td><td><?php echo $stats['lastStartDate'];?></td>
+            <td>Lastest Start Date</td><td><?php echo (isset($stats['lastStartDate']) ? $stats['lastStartDate'] : 'None provided');?></td>
             </tr>
         </tbody>
         </table>
+        </div>
     </div>
     <div role="tabpanel" class="tab-pane" id="common">
         <h2>Common Matches</h2>
@@ -125,8 +131,14 @@
         <div class="bs-callout bs-callout-info">
             <p>Graphical output of various data components</p>
         </div>
-
-        <?php echo $this->load->view('sections/graphOutput', array('common'=>$common)); ?>
+        <?php if(isset($mostCommon['title'])) { ?>
+            <?php echo $this->load->view('sections/graphOutput', array('common'=>$common)); ?>
+        <?php } else { ?>
+            <div class="bs-callout bs-callout-danger">
+                <h4>Oh no. Keywords are too vague</h4>
+                <p>The results we got back aren't showing any consistent items. Try being more specific with your search. Vague searches will not result in valid output</p>
+            </div>
+        <?php } ?>
     </div>
     <div role="tabpanel" class="tab-pane" id="suggestion">
         <h2>Suggestion</h2>

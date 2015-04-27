@@ -20,7 +20,7 @@ $config['ebay_entriesPerPage'] = 100;
  * Recommended: 1-5
  * Default: 2
  */
-$config['ebay_pagesPerSearch'] = 1;
+$config['ebay_pagesPerSearch'] = 5;
 
 
 /**
@@ -37,10 +37,26 @@ $config['enable_recentSearch'] = TRUE;
  * Disabled: FALSE
  * Recommended: TRUE
  */ 
-$config['enable_localResults'] = TRUE;
+$config['enable_localResults'] = false;
 
 /**
  * Allow EPTA to parse and store tags from items
  * Recommended: TRUE
  */
 $config['enable_tagCollection'] = TRUE;
+
+/**
+ * Using title tag matching algorithm to filter out unlikely results
+ * Recommended: TRUE
+ */
+$config['enable_titleMatching'] = TRUE;
+
+/**
+ * Dictates the minimum match rating allowed to pass
+ * The total rating is: (Total Non Unique Tags * titleMatching_tolerance)
+ * Any value greater than total rating passes
+ * Min: 0.01
+ * Max: 1.0
+ * Recommended: 0.5 
+ */
+$config['titleMatching_tolerance'] = 0.3;

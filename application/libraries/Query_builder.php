@@ -20,6 +20,8 @@ class Query_builder extends Connector {
     private $_keyword = "";
     private $_condition = false;
     
+    private $_itemFilters = array('Condition');
+    
     /**
      * Constructor
      */
@@ -35,10 +37,7 @@ class Query_builder extends Connector {
         // Default operation_name
         // TODO: Dynamic operation name
         $this->_operation_name = "findCompletedItems";
-        // Store any provided conditions
-        // TODO: Layout conditions for advanced search
         $this->_keyword = (isset($options['keyword']) ? $options['keyword'] : $this->ci->input->post('keyword'));
-        if(isset($options['condition'])) $this->_condition = $options['condition'];
         if(isset($options['page'])) $this->_pageNumber = $options['page'];
         return $this->get_call_string();
     }
@@ -61,11 +60,28 @@ class Query_builder extends Connector {
         $this->_call_string .= "&SECURITY-APPNAME=".$this->ci->config->item('ebay_appid');
         $this->_call_string .= "&GLOBAL-ID=".$this->ci->config->item('ebay_globalid');
         $this->_call_string .= "&keywords=".urlencode($this->_keyword);
-        //$this->_call_string .="&itemFilter[0].name=Condition&itemFilter[0].value=New";
+        // Load any posted filters
+        $this->_call_string .= $this->_build_filter();
         $this->_call_string .= "&paginationInput.entriesPerPage=".$this->ci->config->item('ebay_entriesPerPage');
         if($this->_pageNumber) 
             $this->_call_string .= "&paginationInput.pageNumber=".$this->_pageNumber;
+        //print($this->_call_string);exit;
         return $this->_call_string;
+    }
+    
+    private function _build_filter() {
+        $string = "";
+        $count = 0;
+        foreach($this->_itemFilters as $filter) {
+            $formData = $this->ci->input->post($filter);
+            if(is_array($formData)) {
+                foreach($formData as $v) {
+                    $string .= $this->_call_string .="&itemFilter[".$count."].name=".$filter."&itemFilter[".$count."].value=".$v;
+                    $count++;
+                }
+            }
+        }
+        return $string;
     }
     
 }

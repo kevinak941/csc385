@@ -1,6 +1,6 @@
 <div class="container">
 <div class="title">
-<h2 style="font-family:tahoma">HELLO! I AM <img src="http://localhost/csc385/htdocs/images/epta_logo.png" style="max-width: 80px;padding-bottom:6px;">. </h2>
+<h2 style="font-family:tahoma">HELLO! I AM <img src="<?php echo base_url('htdocs/images/epta_logo.png');?>" style="max-width: 80px;padding-bottom:6px;">. </h2>
 <span style="font-size: 24pt; font-family:tahoma;">The <font color="cc3333"><b>e</b></font>Bay <font color="0066cc"><b>p</b></font>ricing <font color="ff9900"><b>t</b></font>ool <font color="99cc00"><b>a</b></font>ssistant </span> 
 </div>
 

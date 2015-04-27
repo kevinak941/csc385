@@ -26,15 +26,15 @@
                             <span class="icon-bar"></span>
                         </button>
                         <a class="navbar-brand" href="<?php echo base_url();?>">
-                            <img src="http://localhost/csc385/htdocs/images/epta_logo.png" style="max-width: 90px;">
+                            <img src="<?php echo base_url('htdocs/images/epta_logo.png');?>" style="max-width: 90px;">
                         </a>
                     </div>
 
                     <!-- Collect the nav links, forms, and other content for toggling -->
-                    <div class="navbar-collapse" id="main-nav">
+                    <div class="navbar-collapse collapse" id="main-nav">
                         <ul class="nav navbar-nav">
                             <li class="active"><a href="<?php echo base_url();?>">Home <span class="sr-only">(current)</span></a></li>
-                            <li><a href="<?php echo base_url('search/byKeyword/');?>">Search</a></li>
+                            <li><a href="<?php echo base_url('search/byKeyword/');?>">Quick Search</a></li>
                             <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Search <span class="caret"></span></a>
                             <ul class="dropdown-menu" role="menu">

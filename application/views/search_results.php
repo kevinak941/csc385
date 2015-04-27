@@ -33,6 +33,11 @@
         <?php if(isset($mostCommon['title'])) { ?>
             <h3>Most Common Name For Your Located Item</h3>
             <p><?php echo $mostCommon['title'];?></p>
+        <?php } else { ?>
+            <div>
+                <h3>Oh no. Keywords are too vague</h3>
+                <p>The results we got back aren't showing any consistent items. Try being more specific with your search. Vague searches will not result in valid output</p>
+            </div>
         <?php } ?>
         
         <div class="bs-callout bs-callout-warning">

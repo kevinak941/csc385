@@ -44,8 +44,15 @@ class KAK_Model extends CI_Model {
 		$fields = $this->_default($this->_default_values, $fields);
 		
 		foreach($this->_fields as $check) {
-			if( isset($fields[$check]))
-				$this->db->set($check, $fields[$check]);
+			if( isset($fields[$check])) {
+				if($fields[$check] == 'NOW()') {
+					$this->db->set($check, $fields[$check], FALSE);
+				} else if($fields[$check] == 'NULL') {
+					$this->db->set($check, NULL);
+				} else {
+					$this->db->set($check, $fields[$check]);
+				}
+            }
 		}
 		$this->db->insert($this->_primary_table);
 		return $this->db->insert_id();

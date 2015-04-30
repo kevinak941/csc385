@@ -114,48 +114,10 @@ class Search extends Base_Controller {
         // Ensure data was added to item list
         if(!empty($itemList['item'])) {
             $this->item_handler($itemList);
-            
-            
-            /*function cmp($a, $b) {
-                if($a['num'] == $b['num'])
-                    return 0;
-                return ($a['num'] > $b['num']) ? -1:1;
-            }
-            $enhanceProdId = $this->parser->trackCommon['product_id'];
-            uasort($enhanceProdId, 'cmp');
 
-            if(count($enhanceProdId) > 0) {
-            for($x = 1; $x <= $this->config->item('ebay_pagesPerSearch'); $x++) {
-                $url = $this->query->build(array('keyword'=>array_keys($enhanceProdId)[0], 'page'=>$x));
-                print($url."<br>");
-                $this->fork->add($url);
-            }
-            
-            $result = $this->fork->runConcurrent('xml',function($response) {
-                return $response;
-            });
-            print(array_keys($enhanceProdId)[0]);
-            // Make sure we got a result
-        if($result) { 
-        $itemList = array('item'=>array());
-            // All calls are added to an response array
-            // Loop through to compile each results' items
-            foreach($result as $response) {
-print_r($response);
-                    foreach($response->searchResult->item as $item)
-                        $itemList['item'][] = $item;
-
-            }
-        }
-        print_r($itemList);exit;
-$this->item_handler($itemList);
-            }*/
             $this->pull_local();
             $end = microtime(true);
-            //print "TIME : " . ($end-$start);
-            
 
-            //echo "<pre>";print_r($this->parser->trackCommon);exit;
             $this->load->view('header');
             $this->load->view('search_results', $this->prep_output($keyword, ($end-$start)));
             $this->load->view('footer');
@@ -183,8 +145,8 @@ $this->item_handler($itemList);
             //$upc_response = simplexml_load_file('http://upcdatabase.org/code/'.$value->);
             
             // Cache reusable values
-            $status = $value->sellingStatus->sellingStatus;
-            $cost   = (int)$value->sellingStatus->currentPrice;
+            $status = (string)$value->sellingStatus->sellingState;
+            $cost   = (double)$value->sellingStatus->currentPrice;
             $cat_id = (int)$value->primaryCategory->categoryId;
             
             // Check if item is already in db based on site item id
@@ -198,14 +160,21 @@ $this->item_handler($itemList);
                                             'type'              =>  (string)$value->listingInfo->listingType,
                                             'image'             =>  (string)$value->galleryURL,
                                             'currentPrice'      =>  $cost,
-                                            'bestOffer'         =>  (int)$value->listingInfo->bestOfferEnabled,
-                                            'buyItNow'          =>  (int)$value->listingInfo->buyItNowAvailable,
-                                            'buyItNowPrice'     =>  (isset($value->listingInfo->buyItNowPrice) ? $value->listingInfo->buyItNowPrice : null),
+                                            'bestOffer'         =>  ((string)$value->listingInfo->bestOfferEnabled=='true' ? 1 : 0),
+                                            'buyItNow'          =>  ((string)$value->listingInfo->buyItNowAvailable=='true' ? 1 : 0),
+                                            'buyItNowPrice'     =>  (isset($value->listingInfo->buyItNowPrice) ? (double)$value->listingInfo->buyItNowPrice : null),
                                             'startTime'         =>  (string)$value->listingInfo->startTime,
                                             'endTime'           =>  (string)$value->listingInfo->endTime,
                                             'condition'         =>  (string)$value->condition->conditionDisplayName,
-                                            'sold'              =>  (int)(($status=='EndedWithoutSales'||$status=='EndedWithSales')?1:0),
-                                            'raw'               =>  (string)print_r($value, true)
+                                            'sold'              =>  (($status=='EndedWithoutSales'||$status=='EndedWithSales')?1:0),
+                                            'sellingState'      =>  $status,
+                                            'shippingServiceCost'=> ((double)$value->shippingInfo->shippingServiceCost),
+                                            'shippingType'      =>  (string)$value->shippingInfo->shippingType,
+                                            'shipToLocations'   =>  (string)$value->shippingInfo->shipToLocations,
+                                            'topRatedListing'   =>  ((string)$value->topRatedListing=='true' ? 1 : 0),
+                                            'raw'               =>  (string)print_r($value, true),
+                                            'dbCreatedOn'       =>  'NOW()',
+                                            'dbUpdatedOn'       =>  'NOW()'
                                         ));
             $this->tempf->add(base_url('curl/addPostItem'), $item_data);
             $this->parser->explodeTitle((string)$value->title); 

@@ -33,6 +33,10 @@ class Item_m extends KAK_Model {
                                     'condition',
                                     'sold',
                                     'sellingState',
+                                    'shippingType',
+                                    'shipToLocations',
+                                    'shippingServiceCost',
+                                    'topRatedListing',
                                     'raw',
                                     'dbCreatedOn',
                                     'dbUpdatedOn',
@@ -42,6 +46,9 @@ class Item_m extends KAK_Model {
 							NULL);
 	}
     
+    /**
+     * Used to achieve background insertions
+     */
     public function addFromPost() {
         $insert_array = array();
         foreach($this->_fields as $key) {
@@ -50,7 +57,10 @@ class Item_m extends KAK_Model {
         }
         if($this->exists(array('site_item_id'=>$insert_array['site_item_id'], 'site_type'=>'ebay'))) {
             $update_id = $insert_array['site_item_id'];
+            // Don't update when it was created or site item id
             unset($insert_array['site_item_id']);
+            if(isset($insert_array['dbCreatedOn']))
+                unset($insert_array['dbCreatedOn']);
             $this->update($insert_array, array('site_item_id'=>$update_id));
         } else {
             $this->insert($insert_array);
